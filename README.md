@@ -1,7 +1,7 @@
 # winscript
 
 This is a script to debloat Windows 10/11 by removing default apps, disabling services, and making privacy-related tweaks.
-My work is the culmination of weeks of coding and optimization. Please read [this](https://frahnklin.github.io/windows-script/) to learn more about the script.
+My work is the culmination of weeks of coding and optimization. Please read [this](https://frahnklin.github.io/blog/windows-script/) to learn more about the script.
 
 # Instructions
 
