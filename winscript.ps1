@@ -65,11 +65,14 @@ If ($winget -eq $true) {
   Write-Host "Installing winget..."
   Start-BitsTransfer -Source "https://globalcdn.nuget.org/packages/microsoft.ui.xaml.2.7.1.nupkg" -Destination "$env:temp\xaml.zip"
   Expand-Archive $env:temp\xaml.zip -DestinationPath $env:temp -Force
-  Add-AppxPackage -Path $env:temp\tools\Appx\x64\release\Microsoft.UI.Xaml.2.7.appx
+  Add-AppxProvisionedPackage -Online -PackagePath $env:temp\tools\Appx\x64\release\Microsoft.UI.Xaml.2.7.appx -SkipLicense
   Start-BitsTransfer -Source "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx" -Destination "$env:temp\vclibs.appx"
-  Add-AppxPackage -Path $env:temp\vclibs.appx
-  Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/latest/download/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:temp\appinstaller.msixbundle"
-  Add-AppxPackage -Path $env:temp\appinstaller.msixbundle
+  Add-AppxProvisionedPackage -Online -PackagePath $env:temp\vclibs.appx -SkipLicense
+  # Replace the next two links below in case I forget to once this version becomes obsolete
+  # Go to https://github.com/microsoft/winget-cli/releases/latest and use the links for the Microsoft.DesktopAppInstaller msixbundle and the *_License1 xml file
+  Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -Destination "$env:temp\appinstaller.msixbundle"
+  Start-BitsTransfer -Source "https://github.com/microsoft/winget-cli/releases/download/v1.4.10173/3463fe9ad25e44f28630526aa9ad5648_License1.xml" -Destination "$env:temp\lic.xml"
+  Add-AppxProvisionedPackage -Online -PackagePath $env:temp\appinstaller.msixbundle -LicensePath $env:temp\lic.xml
 }
 
 If ($wingetApps -eq $true) {
@@ -992,6 +995,7 @@ $files = (
   "xaml.zip",
   "vclibs.appx",
   "appinstaller.msixbundle",
+  "lic.xml",
   "epsetup.exe",
   "exploit_protection.xml",
   "edge_removal.bat"
