@@ -664,7 +664,7 @@ If($edgeRemove -eq $true) {
   )
 
   ForEach ($folder in $folders) {
-    If (Test-Location $folder) {
+    If (Test-Path $folder) {
       takeown.exe /f $folder
       icacls.exe $folder /grant everyone:f
       Remove-Item -Recurse $folder -Force -ErrorAction SilentlyContinue
@@ -743,7 +743,7 @@ reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BackgroundModeEnabled /t 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v StartupBoostEnabled /t REG_DWORD /d 0 /f
 
 # Uninstall Microsoft Teams
-If (Test-Location $env:LOCALAPPDATA\Microsoft\Teams\update.exe) {
+If (Test-Path $env:LOCALAPPDATA\Microsoft\Teams\update.exe) {
   Start-Process $env:LOCALAPPDATA\Microsoft\Teams\update.exe "-uninstall -s" }
 Remove-Item -Recurse $env:LOCALAPPDATA\Microsoft\Teams -ErrorAction SilentlyContinue
 
@@ -916,7 +916,7 @@ If ($svcDel -eq $true) {  # Final cleanup of tracking services
   )
 
   ForEach ($file in $files) {
-    If (Test-Location $file) {
+    If (Test-Path $file) {
       takeown.exe /f $file
       icacls.exe $file /grant everyone:f
       Remove-Item $file -Recurse -Force -ErrorAction SilentlyContinue
@@ -1002,7 +1002,7 @@ $files = (
 )
 
 ForEach ($file in $files) {
-  If (Test-Location $file) {
+  If (Test-Path $file) {
     Remove-Item $env:temp\$file -Recurse -Force -ErrorAction SilentlyContinue
   }
 }
