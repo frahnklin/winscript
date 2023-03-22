@@ -755,149 +755,96 @@ Write-Host "Stage 4 of debloat finished."
 Write-Host "Starting stage 5 of debloat: disabling services..."
 
 $svcsToDisable = (
-  "AJRouter",
-  "ALG",
-  "tzautoupdate",
+  "AxInstSV",                                   # ActiveX Installer (AxInstSv): installs ActiveX controls
+  "AJRouter",                                   # AllJoyn Router Service: connects to AllJoyn routers
+  "AppReadiness",                               # App Readiness: installs bloat onto new user accounts
+  "ALG",                                        # Application Layer Gateway Service: some internet sharing stuff
+  "AppMgmt",                                    # Application Management: used for apps pushed through gpedit
+  "AssignedAccessManagerSvc",                   # Assigned Access Manager Service: provides "kiosk experience"
+  "tzautoupdate",                               # Auto Time Zone Updater: updates time zone
   "BthAvctpSvc",
-  "BTAGService",
-  "PeerDistSvc",
-  "autotimesvc",
-  "CertPropSvc",
-  "NfsClnt",
-  "DiagTrack",
-  "diagnosticshub.standardcollector.service",
-  "cbdhsvc",
-  "dmwappushservice",
-  "dmwappushsvc",
-  "MapsBroker",
-  "Fax",
-  "HomeGroupListener",
-  "HomeGroupProvider",
-  "ndu",
-  "lfsvc",
-  "InventorySvc",
-  "HvHost",
-  "gcs",
-  "vmickvpexchange",
-  "vmicguestinterface",
-  "vmicshutdown",
-  "vmicheartbeat",
-  "vmcompute",
-  "vmicvmsession",
-  "vmicrdv",
-  "vmictimesync",
-  "vmicvss",
-  "irmon",
-  "CellularTime",
-  "SharedAccess",
-  "iphlpsvc",
-  "IpxlatCfgSvc",
-  "AppVClient",
-  "SmsRouter",
-  "NaturalAuthentication",
-  "Netlogon",
-  "CscService",
-  "dSvc",
-  "SEMgrSvc",
-  "PhoneSvc",
-  "PcaSvc",
-  "WPDBusEnum",
-  # "SessionEnv",
-  # "TermService",
-  "RpcLocator",
-  "ReomteAccess",
-  "RemoteRegistry",
-  "RetailDemo",
-#	"seclogon",
-  "SstpSvc",
-  "StiSvc",
-  "spectrum",
-  "perceptionsimulation",
-  "SensorDataService",
-  "SensrSvc",
-  "SensorService",
-  "shpamsvc",
-  "SCardSvr",
-  "ScDeviceEnum",
-  "SCPolicySvc",
-  "SNMPTRAP",
-  "UevAgentService",
-  "WebClient",
-  "FrameServer",
-  "FrameServerMonitor",
-  "icssvc",
-  "WalletService",
-  "WpcMonSvc",
-  "wcncsvc",
-  "wisvc",
-  "WinRM",
-  "WwanSvc",
-  # "MicrosoftEdgeElevationService",
-  # "edgeupdate",
-  # "edgeupdatem",
-  "TrkWks",
-  "FontCache",
-  "PerfHost",
-  "WMPNetworkSvc",
-  "WpmService",
-  "RtkBtManServ",
-  "NahimicService",
-  "NetTcpPowerSharing",
-  "MSDTC",
-  "DevicePickerUserSvc",
-  "MessagingService",
-  "OneSyncSvc",
-  "PimIndexMaintenanceSvc",
-  "UnistoreSvc",
-  "lmhosts",
-  # "SSDPSRV",
-  "AppReadiness",
-  # "LanmanWorkstation",
-  "CmService",
-  # "bowser",
-  # "DusmSvc",
-  "WbioSrvc",
-  "HNS",
-  "PenService",
-  # "FDResPub",
-  # "fdPHost",
-  "Wcmsnetwvc",
-  "nvagent",
-  "LanmanServer",
-  "TieringEngineService",
-  "MixedRealityOpenXRSvc",
-  "WMIRegistrationService",
-  "Intel(R) Capability Licensing Service TCP IP Interface",
-  "jhi_service",
-  "Intel(R) TPM Provisioning Service",
-  "EntAppSvc",
-  "MSiSCSI",
-  "p2pimsvc",
-  "p2psvc",
-  "PNRPsvc",
-  "P9RdrService",
-  "WerSvc",
-  "dot3svc",
-  "dcsvc",
-  "AxInstSV",
-  "AarSvc",
-  "GrahicsPerfSvc",
-  # "DPS",
-  # "WdiServiceHost",
-  # "WdiSystemHost",
-  "DsSvc",
-  "BluetoothUserService",
-  "GamingServices",
-  "GamingServicesNet",
-  "GameInput Service",
-  # "DisplayEnhancementService" # maybe only disable for desktops??
-  "DispBrokerDesktopSvc",
-  "lltdsvc",
-  "wlpasvc",
-  "TokenBroker",
-  # "WinHttpAutoProxySvc", # can't be disabled??
-  "CDPSvc",
-  "CDPUserSvc"
+# "BTAGService",                                # Bluetooth Audio Gateway Service: for bluetooth audio devices
+  "PeerDistSvc",                                # BranchCache: peer-to-peer Windows update sharing
+  "autotimesvc",                                # Cellular Time: gets time from mobile networks
+  "CellularTime",                               # Cellular Time: alternate version
+  "CertPropSvc",                                # Certificate Propagation: gets certificates from smart cards
+  "DiagTrack",                                  # Connected User Experiences and Telemetry: spyware
+  "DmEnrollmentSvc",                            # Device Management Enrollment Service: used for device management
+  "dmwappushservice",                           # Device Management Wireless Application Protocol (WAP) Push message Routing Service: spyware
+  "TrkWks",                                     # Distributed Link Tracking Client: maintains NTFS file links (links still work without it)
+  "MSDTC",                                      # Distributed Transaction Coordinator: doesn't seem important
+  "MapsBroker",                                 # Downloaded Maps Manager: who uses that??
+  "Fax",                                        # Fax: who uses that??
+  "lfsvc",                                      # Geolocation Service
+  "HomeGroupListener",                          # Home Group Listener: used for homegroups (who uses that??)
+  "HomeGroupProvider",                          # Home Group Provider: used for homegroups (who uses that??)
+# BEGIN SERVICES NEEDED FOR HYPER-V
+  "HvHost",                                     # HV Host Service
+  "vmickvpexchange",                            # Hyper-V Data Exchange Service
+  "vmicguestinterface",                         # Hyper-V Guest Service Interface
+  "vmicshutdown",                               # Hyper-V Guest SHutdown Service
+  "vmicheartbeat",                              # Hyper-V Heartbeat Service
+  "vmcompute",                                  # Hyper-V Host Compute Service
+  "vmicvmsession",                              # Hyper-V PowerShell Direct Service                              
+  "vmicrdv",                                    # Hyper-V Remote Desktop Virtualization Service
+  "vmictimesync",                               # Hyper-V Time Synchronization Service
+  "vmicvss",                                    # Hyper-V Volume Shadow Copy Service
+  "irmon",                                      # Infrared Monitor Service: monitors infrared
+# END SERVICES NEEDED FOR HYPER-V
+  "SharedAccess",                               # Internet Connection Sharing (ICS): share internet
+  "InventorySvc",                               # Inventory and Compatibility Appraisal Service: telemetry (I think)
+  "iphlpsvc",                                   # IP Helper: tunnel using IPv6 translation
+  "IpxlatCfgSvc",                               # IP Translation Configuration Service: converts between IPv4 and IPv6
+  "KtmRm",                                      # KtmRm for Distributed Transaction Coordinator: useless I think
+  "lltdsvc",                                    # Link-Layer Topology Discovery Mapper: MS makes a map of your network????
+  "diagnosticshub.standardcollector.service",   # Microsoft (R) Diagnostics Hub Standard Collector Service: more telemetry
+  "AppVClient",                                 # Microsoft App-V Client: App-V stuff (useless??)
+  "MSiSCSI",                                    # Microsoft iSCSI Initiator Service: iSCSI is obsolete?
+  "MsKeyboardFilter",                           # Microsoft Keyboard Filter: "keystroke filtering"???
+  "SmsRouter",                                  # Microsoft Windows SMS Router Service.: routes SMS things??
+  "NetTcpPortSharing",                          # Net.Tcp Port Sharing Service: shares TCP ports using net.tcp protocol (sounds useless)
+  "Netlogon",                                   # Netlogon: sounds like a network logon
+  "NlaSvc",                                     # Network Location Awareness: knows what network you're on???
+  "CscService",                                 # Offline Files: allows files on network shares to be used offline
+  "WpcMonSvc",                                  # Parental Controls: I think it's used for parental controls
+  "SEMgrSvc",                                   # Payments and NFC/SE Manager: used for NFC chip stuff (useless on desktop/laptop)
+  "PenService",                                 # PenService_?????: I think it's a service to serve pens
+  "PerfHost",                                   # Performance Counter DLL Host: queries 32-bit DLL performance (whatever that may mean)
+  "PhoneSvc",                                   # Phone Service: manages telephony stuff
+  "QWAVE",                                      # Quality Windows Audio Video Experience: ensures you have the very best multimedia experience on Microsoft Windows (R)
+  "SessionEnv",                                 # Remote Desktop Configuration: remote desktop stuff
+  "TermService",                                # Remote Desktop Services: remote desktop stuff
+  "UmRdpService",                               # Remote Desktop Services UserMode Port Redirector: remote desktop stuff
+  "RpcLocator",                                 # Remote Procedure Call (RPC) Locator: useless past Windows 2003
+  "RemoteRegistry",                             # Remote Registry: access registry remotely
+  "RetailDemo",                                 # Retail Demo Service: demos your device for retail
+  "ReomteAccess",                               # Routing and Remote Access: for business stuff
+# "seclogon",                                   # Secondary Logon: note needed for updating Adobe Creative Cloud Apps
+  "SensorDataService",                          # Sensor Data Service: delivors sensory data gathered from the plentiful sensors on your sensory device
+  "SensrSvc",                                   # Sensor Monitoring Service: monitors sensory data gathered from the plentiful sensors on your sensory device
+  "SensorService",                              # Sensor Service: senses sensory data from the plentiful sensors on your sensory device
+  "shpamsvc",                                   # Shared PC Account Manager: isn't actually necessary to share a PC with someone
+  "SCardSvr",                                   # Smart Card: ensures access to the smartest possible cards in the smartest way
+  "ScDeviceEnum",                               # Smart Card Device Enumeration Service: enumerates the smartest possible cards in the smartest possible way
+  "SCPolicySvc",                                # Smart Card Removal Policy: removes the smartest possible cards in the smartest possible way
+  "SharedRealitySvc",                           # Spatial Data Service: gathers only the spacialest of data from the spacial environment in which your device is located
+  "TapiSrv",                                    # Telephony: telephony
+# "UevAgentService",                            # User Experience Virtualization Service: probably needed for syncing Windows settings
+  "VacSvc",                                     # Volumetric Audio Compositor Service: composites only the most volumetric audio for Mixed Reality
+# "WbioSrvc",                                   # Windows Biometric Service: used for biometrics
+# "FrameServer",                                # Windows Camera Frame Server: used for cameras
+  "FrameServerMonitor",                         # Windows Camera Frame Server Monitor: monitors the service above
+  "StiSvc",                                     # Windows Image Acquisition (WIA): used for cameras and scanners
+  "wisvc",                                      # Windows Insider Service: used for Windows Insider program
+  "WManSvc",                                    # Windows Management Service: MDM stuff probably
+  "WMPNetworkSvc",                              # Windows Media Player Network Service: don't use Windows Media Player
+  "MixedRealityOpenXRSvc",                      # Windows Mixed Reality OpenXR Service: for VR I think
+  "icssvc",                                     # Windows Mobile Hotspot Service: hotspot from device
+  "spectrum",                                   # Windows Perception Service: spatial perception
+  "perceptionsimulation",                       # Windows Perception Simulation Service: more spacial perception
+  "WinRM",                                      # Windows Remote Management (WS-Management): used for remote management
+# "dot3svc",                                    # Wired AutoConfig: needed for ethernet
+  "WwanSvc"                                     # WWAN AutoConfig: needed for mobile broadband
 )
 
 ForEach ($svc in $svcsToDisable) {
