@@ -34,6 +34,9 @@ Write-Host "`nWelcome to the Windows 10/11 Debloater!"
 Write-Host "`nThis script aims to fix the problems with Windows 10/11."
 Write-Host "Telemetry is disabled, bloat is removed, and optimizations are made."
 
+Write-Host "`nStarting stage 0 of debloat: creating restore point...`n"
+Checkpoint-Computer -Description 'Pre-WinScript restore point' -RestorePointType 'MODIFY_SETTINGS'
+
 Write-Host "`nStarting stage 1 of debloat: preparing system...`n"
 
 # Input validation loop for each prompt until either 'Y', 'y', 'N', or 'n' is typed
