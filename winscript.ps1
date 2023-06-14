@@ -42,6 +42,7 @@ Do { $wingetApps = (Read-Host "Install Chromium and 7-Zip? (Y/N)").ToLower() } U
 Do { $epInstall = (Read-Host "Install ExplorerPatcher (for Windows 11)? (Y/N)").ToLower() } Until (($epInstall -eq 'y') -or ($epInstall -eq 'n'))
 Do { $removeStartAndTbPins = (Read-Host "Remove Start Menu and Taskbar Pins? (Only advised for new installs) (Y/N)").ToLower() } Until (($removeStartAndTbPins -eq 'y') -or ($removeStartAndTbPins -eq 'n'))
 Do { $uwpRemove = (Read-Host "Remove (almost) all stock UWP apps? (Y/N)").ToLower() } Until (($uwpRemove -eq 'y') -or ($uwpRemove -eq 'n'))
+Do { $edgePolicy = (Read-Host "Force privacy-enhancing settings in Edge? (Y/N)").ToLower() } Until (($edgePolicy -eq 'y') -or ($edgePolicy -eq 'n'))
 Do { $edgeRemove = (Read-Host "Remove Microsoft Edge? (Y/N)").ToLower() } Until (($edgeRemove -eq 'y') -or ($edgeRemove -eq 'n'))
 Do { $svcDel = (Read-Host "Permanently delete tracking services? (Y/N)").ToLower() } Until (($svcDel -eq 'y') -or ($svcDel -eq 'n'))
 Do { $featsAndCapabs = (Read-Host "Remove unnecessary Windows Features and Capabilities? (Y/N)").ToLower() } Until (($featsAndCapabs -eq 'y') -or ($featsAndCapabs -eq 'n'))
@@ -646,66 +647,68 @@ If($edgeRemove -eq $true) {
 }
 
 # Microsoft Edge registry policy enforcal
-# Privacy tweaks
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SyncDisabled /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BrowserSignin /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutoImportAtFirstRun /t REG_DWORD /d 4 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DiagnosticData /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PersonalizationReportingEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PasswordManagerEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PasswordMonitorAllowed /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutofillAddressEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutofillCreditCardEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PaymentMethodQueryEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v LocalBrowserDataShareEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v TrackingPrevention /t REG_DWORD /d 3 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ConfigureDoNotTrack /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DnsOverHttpsMode /t REG_SZ /d "secure" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DnsOverHttpsTemplates /t REG_SZ /d "https://dns.adguard-dns.com/dns-query" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SendSiteInfoToImproveServices /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SiteSafetyServicesEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AlternateErrorPagesEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v MicrosoftEditorProofingEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v MicrosoftEditorSynonymsEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeAssetDeliveryServiceEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SpotlightExperiencesAndRecommendationsEnabled /t REG_DWORD /d 0 /f
-# Bloat features tweaks
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageAppLauncherEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageContentEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageHideDefaultTopSites /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageQuickLinksEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SearchInSidebarEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ShowMicrosoftRewards /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeShoppingAssistantEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PinningWizardAllowed /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PromotionalTabsEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RedirectSitesFromInternetExplorerPreventBHOInstall /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RedirectSitesFromInternetExplorerRedirectMode /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HideInternetExplorerRedirectUXForIncompatibleSitesEnabled /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v InternetExplorerIntegrationCloudUserSitesReporting /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeDiscoverEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HubsSidebarEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v FamilySafetySettingsEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeFollowEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v VerticalTabsAllowed /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v WebWidgetAllowed /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v WebWidgetIsEnabledOnStartup /t REG_DWORD /d 0 /f
-# Quality-of-life tweaks
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BingAdsSuppression /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderEnabled /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderName /t REG_SZ /d "Google" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderKeyword /t REG_SZ /d "google" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderSearchURL /t REG_SZ /d "{google:baseURL}search?q={searchTerms}&{google:originalQueryForSuggestion}{google:searchFieldtrialParameter}{google:searchClient}{google:sourceId}ie={inputEncoding}" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderSuggestURL /t REG_SZ /d "{google:baseURL}complete/search?output=chrome&q={searchTerms}" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderImageURL /t REG_SZ /d "{google:baseURL}searchbyimage/upload" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageSearchBox /t REG_SZ /d "redirect" /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AddressBarMicrosoftSearchInBingProviderEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SmartScreenPuaEnabled /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EnhanceSecurityMode /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ShowHomeButton /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BackgroundModeEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v StartupBoostEnabled /t REG_DWORD /d 0 /f
+If($edgePolicy -eq $true) {
+  # Privacy tweaks
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SyncDisabled /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BrowserSignin /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutoImportAtFirstRun /t REG_DWORD /d 4 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DiagnosticData /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PersonalizationReportingEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PasswordManagerEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PasswordMonitorAllowed /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutofillAddressEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AutofillCreditCardEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PaymentMethodQueryEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v LocalBrowserDataShareEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v TrackingPrevention /t REG_DWORD /d 3 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ConfigureDoNotTrack /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DnsOverHttpsMode /t REG_SZ /d "secure" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DnsOverHttpsTemplates /t REG_SZ /d "https://dns.adguard-dns.com/dns-query" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SendSiteInfoToImproveServices /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SiteSafetyServicesEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AlternateErrorPagesEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v MicrosoftEditorProofingEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v MicrosoftEditorSynonymsEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeAssetDeliveryServiceEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SpotlightExperiencesAndRecommendationsEnabled /t REG_DWORD /d 0 /f
+  # Bloat features tweaks
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageAppLauncherEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageContentEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageHideDefaultTopSites /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageQuickLinksEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SearchInSidebarEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ShowMicrosoftRewards /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeShoppingAssistantEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PinningWizardAllowed /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v PromotionalTabsEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RedirectSitesFromInternetExplorerPreventBHOInstall /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RedirectSitesFromInternetExplorerRedirectMode /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HideInternetExplorerRedirectUXForIncompatibleSitesEnabled /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v InternetExplorerIntegrationCloudUserSitesReporting /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeDiscoverEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v HubsSidebarEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v FamilySafetySettingsEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EdgeFollowEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v VerticalTabsAllowed /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v WebWidgetAllowed /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v WebWidgetIsEnabledOnStartup /t REG_DWORD /d 0 /f
+  # Quality-of-life tweaks
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BingAdsSuppression /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v RestoreOnStartup /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderEnabled /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderName /t REG_SZ /d "Google" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderKeyword /t REG_SZ /d "google" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderSearchURL /t REG_SZ /d "{google:baseURL}search?q={searchTerms}&{google:originalQueryForSuggestion}{google:searchFieldtrialParameter}{google:searchClient}{google:sourceId}ie={inputEncoding}" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderSuggestURL /t REG_SZ /d "{google:baseURL}complete/search?output=chrome&q={searchTerms}" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v DefaultSearchProviderImageURL /t REG_SZ /d "{google:baseURL}searchbyimage/upload" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v NewTabPageSearchBox /t REG_SZ /d "redirect" /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v AddressBarMicrosoftSearchInBingProviderEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v SmartScreenPuaEnabled /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v EnhanceSecurityMode /t REG_DWORD /d 1 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v ShowHomeButton /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v BackgroundModeEnabled /t REG_DWORD /d 0 /f
+  reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Edge" /v StartupBoostEnabled /t REG_DWORD /d 0 /f
+}
 
 # Uninstall Microsoft Teams
 If (Test-Path $env:LOCALAPPDATA\Microsoft\Teams\update.exe) {
