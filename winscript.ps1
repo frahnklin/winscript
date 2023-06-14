@@ -34,9 +34,6 @@ Write-Host "`nWelcome to the Windows 10/11 Debloater!"
 Write-Host "`nThis script aims to fix the problems with Windows 10/11."
 Write-Host "Telemetry is disabled, bloat is removed, and optimizations are made."
 
-Write-Host "`nStarting stage 0 of debloat: creating restore point...`n"
-Checkpoint-Computer -Description 'Pre-WinScript restore point' -RestorePointType 'MODIFY_SETTINGS'
-
 Write-Host "`nStarting stage 1 of debloat: preparing system...`n"
 
 # Input validation loop for each prompt until either 'Y', 'y', 'N', or 'n' is typed
@@ -95,12 +92,12 @@ If ($wingetApps -eq $true) {
 }
 
 If ($epInstall -eq $true) {
-  # Windows 11 specific tweaks
-  If (((Get-CimInstance Win32_OperatingSystem).BuildNumber) -gt 20000) {
     Start-BitsTransfer -Source "https://github.com/valinet/ExplorerPatcher/releases/latest/download/ep_setup.exe" -Destination "$env:temp\epsetup.exe"
     Start-Process $env:temp\epsetup.exe
     Start-Sleep -Seconds 20
     Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+  # Windows 11 specific tweaks
+  If (((Get-CimInstance Win32_OperatingSystem).BuildNumber) -gt 20000) {
     reg.exe add "HKCU\Software\ExplorerPatcher" /v OldTaskbar /t REG_DWORD /d 0 /f
     reg.exe add "HKCU\Software\ExplorerPatcher" /v ClockFlyoutOnWinC /t REG_DWORD /d 1 /f
     reg.exe add "HKCU\Software\ExplorerPatcher" /v DisableWinFHotkey /t REG_DWORD /d 1 /f
@@ -188,13 +185,6 @@ reg.exe add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Privacy
 reg.exe add "HKEY_USERS\.DEFAULT\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d "0" /f
 reg.exe add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v "Enabled" /t REG_DWORD /d "0" /f
 
-# Disable Windows Autologger
-Write-Output "" > C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl
-reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener" /v "Start" /t REG_DWORD /d 0 /f 
-reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\WMI\AutoLogger\SQMLogger" /v "Start" /t REG_DWORD /d 0 /f 
-icacls C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger /deny SYSTEM:`(OI`)`(CI`)F
-icacls C:\ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger /deny everyone:`(OI`)`(CI`)F
-
 # Disable Cortana
 reg.exe add "HKCU\SOFTWARE\Microsoft\Personalization\Settings" /v AcceptedPrivacyPolicy /t REG_DWORD /d 0 /f
 reg.exe add "HKCU\SOFTWARE\Microsoft\InputPersonalization" /v RestrictImplicitTextCollection /t REG_DWORD /d 1 /f
@@ -202,12 +192,9 @@ reg.exe add "HKCU\SOFTWARE\Microsoft\InputPersonalization" /v RestrictImplicitIn
 reg.exe add "HKCU\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore" /v HarvestContacts /t REG_DWORD /d 0 /f
 
 # Fix Windows Search
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableWebSearch" /t REG_DWORD /d 1 /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "ConnectedSearchUseWeb" /t REG_DWORD /d 0 /f 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowIndexingEncryptedStoresOrItems" /t REG_DWORD /d 0 /f 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowSearchToUseLocation" /t REG_DWORD /d 0 /f 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AlwaysUseAutoLangDetection" /t REG_DWORD /d 0 /f 
-reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "BingSearchEnabled" /t REG_DWORD /d 0 /f 
 reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "CortanaConsent" /t REG_DWORD /d 0 /f 
 reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "CortanaInAmbientMode" /t REG_DWORD /d 0 /f 
 reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "HistoryViewEnabled" /t REG_DWORD /d 0 /f  
@@ -216,13 +203,7 @@ reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "AllowSea
 reg.exe add "HKCU\Software\Microsoft\Windows\CurrentVersion\SearchSettings" /v "SafeSearchMode" /t REG_DWORD /d 0 /f 
 reg.exe add "HKCU\Software\Policies\Microsoft\Windows\Explorer" /v "DisableSearchBoxSuggestions" /t REG_DWORD /d 1 /f 
 reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCortana" /t REG_DWORD /d 0 /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "DisableWebSearch" /t REG_DWORD /d 1 /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "ConnectedSearchUseWeb" /t REG_DWORD /d 0 /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "ConnectedSearchUseWebOverMeteredConnections" /t REG_DWORD /d 0 /f 
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v "AllowCloudSearch" /t REG_DWORD /d 0 /f
-$hkuPath = $(reg.exe query HKEY_USERS | Select-String -NotMatch -Pattern 'S-1-5-19|S-1-5-20|S-1-5-18|.Default|Classes')
-reg.exe add $hkuPath\Software\Policies\Microsoft\Windows\Explorer /v DisableSearchBoxSuggestions /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SYSTEM\ControlSet001\Services\SharedAccess\Parameters\FirewallPolicy\FirewallRules" /v "Block Search SearchApp.exe" /t REG_SZ /d "v2.30|Action=Block|Active=TRUE|Dir=Out|RA42=IntErnet|RA62=IntErnet|App=C:\Windows\SystemApps\Microsoft.Windows.Search_cw5n1h2txyewy\SearchApp.exe|Name=Block Search SearchUI.exe|Desc=Block Cortana Outbound UDP/TCP Traffic|" /f 
+$hkcuPath = $(reg.exe query HKEY_USERS | Select-String -NotMatch -Pattern 'S-1-5-19|S-1-5-20|S-1-5-18|.Default|Classes')
 
 # Disable inking and typing
 reg.exe add "HKCU\Software\Microsoft\InputPersonalization" /v "RestrictImplicitTextCollection" /t REG_DWORD /d 1 /f 
@@ -294,7 +275,7 @@ If ($rmStartAndTbPins -eq $true) {
   reg.exe delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband" /f
 }
 reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v EnableFeeds /t REG_DWORD /d 0 /f
+# reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" /v EnableFeeds /t REG_DWORD /d 0 /f
 reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v ShellFeedsTaskbarViewMode /t REG_DWORD /d 2 /f
 
 # Set UTC Time
@@ -303,23 +284,6 @@ reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" /v RealT
 # Enable highest UAC level
 reg.exe add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 2 /f
 reg.exe add "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v PromptOnSecureDesktop /t REG_DWORD /d 1 /f
-
-# Fix Windows Update
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" /v PreventDeviceMetadataFromNetwork /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" /v DontPromptForWindowsUpdate /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" /v DontSearchWindowsUpdate /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" /v DriverUpdateWizardWuSearchEnabled /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching" /v SearchOrderConfig /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v ExcludeWUDriversInQualityUpdate /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoRebootWithLoggedOnUsers /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v AUPowerManagement /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v BranchReadinessLevel /t REG_DWORD /d 20 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v DeferFeatureUpdatesPeriodInDays /t REG_DWORD /d 365 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" /v DeferQualityUpdatesPeriodInDays /t REG_DWORD /d 4 /f
-reg.exe add "HKLM\Software\Microsoft\WindowsUpdate\UX\Settings" /v UxOption /t REG_DWORD /d 1 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DownloadMode /t REG_DWORD /d 0 /f
-reg.exe add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DODownloadMode /t REG_DWORD /d 1 /f
-reg.exe add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization" /v SystemSettingsDownloadMode /t REG_DWORD /d 3 /f
 
 # Enable long paths
 reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
@@ -535,8 +499,6 @@ If ($uwpRemove -eq $true) {
     "BingTravel",
     "Cortana",
     "ClipChamp",
-    "Camera",
-    "Edge",
     "GamingServices",
     "GamingApp"
     "GetHelp",
@@ -767,7 +729,6 @@ $svcsToDisable = (
   "tzautoupdate",                               # Auto Time Zone Updater: updates time zone
   "BthAvctpSvc",
 # "BTAGService",                                # Bluetooth Audio Gateway Service: for bluetooth audio devices
-  "PeerDistSvc",                                # BranchCache: peer-to-peer Windows update sharing
   "autotimesvc",                                # Cellular Time: gets time from mobile networks
   "CellularTime",                               # Cellular Time: alternate version
   "CertPropSvc",                                # Certificate Propagation: gets certificates from smart cards
@@ -775,54 +736,28 @@ $svcsToDisable = (
   "DmEnrollmentSvc",                            # Device Management Enrollment Service: used for device management
   "dmwappushservice",                           # Device Management Wireless Application Protocol (WAP) Push message Routing Service: spyware
   "TrkWks",                                     # Distributed Link Tracking Client: maintains NTFS file links (links still work without it)
-  "MSDTC",                                      # Distributed Transaction Coordinator: doesn't seem important
   "MapsBroker",                                 # Downloaded Maps Manager: who uses that??
   "Fax",                                        # Fax: who uses that??
   "lfsvc",                                      # Geolocation Service
   "HomeGroupListener",                          # Home Group Listener: used for homegroups (who uses that??)
   "HomeGroupProvider",                          # Home Group Provider: used for homegroups (who uses that??)
-# BEGIN SERVICES NEEDED FOR HYPER-V
-  "HvHost",                                     # HV Host Service
-  "vmickvpexchange",                            # Hyper-V Data Exchange Service
-  "vmicguestinterface",                         # Hyper-V Guest Service Interface
-  "vmicshutdown",                               # Hyper-V Guest SHutdown Service
-  "vmicheartbeat",                              # Hyper-V Heartbeat Service
-  "vmcompute",                                  # Hyper-V Host Compute Service
-  "vmicvmsession",                              # Hyper-V PowerShell Direct Service                              
-  "vmicrdv",                                    # Hyper-V Remote Desktop Virtualization Service
-  "vmictimesync",                               # Hyper-V Time Synchronization Service
-  "vmicvss",                                    # Hyper-V Volume Shadow Copy Service
-  "irmon",                                      # Infrared Monitor Service: monitors infrared
-# END SERVICES NEEDED FOR HYPER-V
-  "SharedAccess",                               # Internet Connection Sharing (ICS): share internet
   "InventorySvc",                               # Inventory and Compatibility Appraisal Service: telemetry (I think)
-  "iphlpsvc",                                   # IP Helper: tunnel using IPv6 translation
-  "IpxlatCfgSvc",                               # IP Translation Configuration Service: converts between IPv4 and IPv6
-  "KtmRm",                                      # KtmRm for Distributed Transaction Coordinator: useless I think
   "lltdsvc",                                    # Link-Layer Topology Discovery Mapper: MS makes a map of your network????
   "diagnosticshub.standardcollector.service",   # Microsoft (R) Diagnostics Hub Standard Collector Service: more telemetry
-  "AppVClient",                                 # Microsoft App-V Client: App-V stuff (useless??)
   "MSiSCSI",                                    # Microsoft iSCSI Initiator Service: iSCSI is obsolete?
   "MsKeyboardFilter",                           # Microsoft Keyboard Filter: "keystroke filtering"???
   "SmsRouter",                                  # Microsoft Windows SMS Router Service.: routes SMS things??
   "NetTcpPortSharing",                          # Net.Tcp Port Sharing Service: shares TCP ports using net.tcp protocol (sounds useless)
-  "Netlogon",                                   # Netlogon: sounds like a network logon
-  "NlaSvc",                                     # Network Location Awareness: knows what network you're on???
   "CscService",                                 # Offline Files: allows files on network shares to be used offline
   "WpcMonSvc",                                  # Parental Controls: I think it's used for parental controls
   "SEMgrSvc",                                   # Payments and NFC/SE Manager: used for NFC chip stuff (useless on desktop/laptop)
   "PenService",                                 # PenService_?????: I think it's a service to serve pens
   "PerfHost",                                   # Performance Counter DLL Host: queries 32-bit DLL performance (whatever that may mean)
   "PhoneSvc",                                   # Phone Service: manages telephony stuff
-  "QWAVE",                                      # Quality Windows Audio Video Experience: ensures you have the very best multimedia experience on Microsoft Windows (R)
-  "SessionEnv",                                 # Remote Desktop Configuration: remote desktop stuff
-  "TermService",                                # Remote Desktop Services: remote desktop stuff
-  "UmRdpService",                               # Remote Desktop Services UserMode Port Redirector: remote desktop stuff
   "RpcLocator",                                 # Remote Procedure Call (RPC) Locator: useless past Windows 2003
   "RemoteRegistry",                             # Remote Registry: access registry remotely
   "RetailDemo",                                 # Retail Demo Service: demos your device for retail
-  "ReomteAccess",                               # Routing and Remote Access: for business stuff
-# "seclogon",                                   # Secondary Logon: note needed for updating Adobe Creative Cloud Apps
+  "RemoteAccess",                               # Routing and Remote Access: for business stuff
   "SensorDataService",                          # Sensor Data Service: delivors sensory data gathered from the plentiful sensors on your sensory device
   "SensrSvc",                                   # Sensor Monitoring Service: monitors sensory data gathered from the plentiful sensors on your sensory device
   "SensorService",                              # Sensor Service: senses sensory data from the plentiful sensors on your sensory device
@@ -832,11 +767,8 @@ $svcsToDisable = (
   "SCPolicySvc",                                # Smart Card Removal Policy: removes the smartest possible cards in the smartest possible way
   "SharedRealitySvc",                           # Spatial Data Service: gathers only the spacialest of data from the spacial environment in which your device is located
   "TapiSrv",                                    # Telephony: telephony
-# "UevAgentService",                            # User Experience Virtualization Service: probably needed for syncing Windows settings
   "VacSvc",                                     # Volumetric Audio Compositor Service: composites only the most volumetric audio for Mixed Reality
-# "WbioSrvc",                                   # Windows Biometric Service: used for biometrics
-# "FrameServer",                                # Windows Camera Frame Server: used for cameras
-  "FrameServerMonitor",                         # Windows Camera Frame Server Monitor: monitors the service above
+  "WerSvc",                                     # Windows Error Reporting Service: reports program errors when they stop responding
   "StiSvc",                                     # Windows Image Acquisition (WIA): used for cameras and scanners
   "wisvc",                                      # Windows Insider Service: used for Windows Insider program
   "WManSvc",                                    # Windows Management Service: MDM stuff probably
